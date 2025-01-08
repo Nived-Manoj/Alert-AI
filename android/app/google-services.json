@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "715025489798",
+    "project_id": "alert-vision-ai-5744b",
+    "storage_bucket": "alert-vision-ai-5744b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715025489798:android:4353ad2ae951b2068c1607",
+        "android_client_info": {
+          "package_name": "com.example.camera_detection_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_ROdbsS_C4QMsOWMH8AfscLLBoA1ABwQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
