@@ -227,7 +227,7 @@ void _showLogoutConfirmationDialog(BuildContext context) async {
                     .pop(true); // Close the dialog and confirm logout
               },
               child: Text(
-                "Logout",
+                "Logout ",
                 style:
                     TextStyle(color: Colors.redAccent), // Logout button color
               ),
