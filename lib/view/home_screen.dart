@@ -74,7 +74,7 @@ class HomeScreen extends StatelessWidget {
                 width: double.infinity,
                 child: Stack(children: [
                   Image.asset(
-                    "assets/images/visual.jpg",
+                    "assets/images/visual3.jpg",
                     fit: BoxFit.contain,
                   ),
                   Positioned(
