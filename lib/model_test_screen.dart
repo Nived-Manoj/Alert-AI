@@ -287,7 +287,7 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
   void _loadModel() async {
     try {
       final options = InterpreterOptions()..threads = 4;
-      _interpreter = await Interpreter.fromAsset('assets/model_unquant1.tflite',
+      _interpreter = await Interpreter.fromAsset('assets/model_unquant.tflite',
           options: options);
 
       var inputShape = _interpreter.getInputTensor(0).shape;
@@ -309,7 +309,7 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
 
   void _loadLabels() async {
     try {
-      final labelData = await rootBundle.loadString('assets/labelz.txt');
+      final labelData = await rootBundle.loadString('assets/labels.txt');
       setState(() {
         _labels = labelData
             .split('\n')
