@@ -1,4 +1,6 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_recognize/detail_screen.dart';
 import 'package:image_recognize/login_screen.dart';
@@ -47,12 +49,85 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
   List<double> _confidenceScores = [];
   List<String> _predictedLabels = [];
   List<Detection> _detectionHistory = [];
+  String? _fcmToken;
 
   @override
   void initState() {
     super.initState();
     _loadModel();
     _loadLabels();
+    _getFCMToken();
+    requestNotificationPermissions();
+    _initializeNotifications();
+  }
+
+  Future<void> requestNotificationPermissions() async {
+    final messaging = FirebaseMessaging.instance;
+    await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+
+  Future<void> _getFCMToken() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    try {
+      // Request permission for notifications
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        // Get the FCM token
+        String? token = await messaging.getToken();
+        setState(() {
+          _fcmToken = token;
+        });
+
+        print("FCM Token: $_fcmToken");
+      } else {
+        print("User declined or has not accepted permissions");
+      }
+    } catch (e) {
+      print("ssssssssss $e");
+    }
+  }
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  void showLocalNotification(String label, double confidence) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'high_importance_channel', // Ensure this matches your existing channel ID
+      'High Importance Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Detection Alert!',
+      'Detected: $label with ${(confidence * 100).toStringAsFixed(1)}% confidence',
+      platformChannelSpecifics,
+    );
   }
 
   @override
@@ -180,6 +255,9 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
               thumbnail: thumbnail,
             ));
           });
+
+// Show local notification when detection occurs
+          showLocalNotification(label, confidence);
         }
       }
     } catch (e) {
@@ -293,11 +371,11 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
       var inputShape = _interpreter.getInputTensor(0).shape;
       var outputShape = _interpreter.getOutputTensor(0).shape;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("output  $outputShape,  $inputShape"),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text("output  $outputShape,  $inputShape"),
+      //   ),
+      // );
 
       setState(() {
         _isModelLoaded = true;
@@ -550,7 +628,11 @@ class _ModelTestScreenState extends State<ModelTestScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: _detectionHistory.length,
                   itemBuilder: (context, index) {
-                    final detection = _detectionHistory[index];
+                    // final detection = _detectionHistory[index];
+                    // Sort the list by timestamp in descending order
+                    final sortedHistory = _detectionHistory
+                      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+                    final detection = sortedHistory[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: AnimatedContainer(

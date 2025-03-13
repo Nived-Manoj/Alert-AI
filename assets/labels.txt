@@ -1,9 +1,9 @@
-0 tiger
-1 elephant
-2 gun
-3 Deer
-4 knife
-5 fight
-6 no detection
-7 walking
-8 running
+ Tiger
+ Elephant
+ Gun
+ Deer
+ Knife
+ Fight
+ No detection
+ Walking
+ Running
